@@ -1,27 +1,63 @@
-// function showPicture(){
-//   // use jQuery ($ is shorthand) to find the div on the page and then change the html
-//   // 'rounded-circle' is a bootstrap thing! Check out more here: http://getbootstrap.com/css/
-//   $("#image").append('<img class="rounded-circle" src="images/high-five.gif"/>');
-//   $("p").html("High five! You're building your first web app!");
+$(document).ready(function() {
+  getPosts();
+});
 
-//   // jQuery can do a lot of crazy stuff, so make sure to Google around to find out more
+function handleLogin() {
+  var provider = new firebase.auth.GoogleAuthProvider();
   
-// }
-
-// $(document).ready(function() {
-//   getWeather();
-// });
-
-function getWeather(city) {
-  const url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&APPID=${apiKey}`;
-
-  $.ajax(url, { success: function(data) {
-    $('.city').text(data.name);
-    $('.temp').text(data.main.temp);
-  }});
+  firebase.auth().signInWithPopup(provider).then(function(result) {
+    // This gives you a Google Access Token. You can use it to access the Google API.
+    var token = result.credential.accessToken;
+    // The signed-in user info.
+    var user = result.user;
+    console.log(user.email);
+    
+  }).catch(function(error) {
+    // Handle Errors here.
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    // The email of the user's account used.
+    var email = error.email;
+    // The firebase.auth.AuthCredential type that was used.
+    var credential = error.credential;
+    // ...
+  });
 }
 
-function searchWeather() {
-  const searchQuery = $('.search').val();
-  getWeather(searchQuery);
+function handleMessageFormSubmit() {
+  const title = $('#post-title').val();
+  const body = $('#post-body').val();
+  addMessage(title, body);
+}
+
+function addMessage(title, body) {
+  const database = firebase.database();
+  
+  const data = {
+    postTitle: title,
+    postBody: body
+  };
+  
+  const postDB = database.ref('posts');
+  
+  const newPostReference = postDB.push();
+  newPostReference.set(data, function(err) {
+    if (err) {
+      window.alert(`Something went wrong\n${JSON.stringify(err)}`);
+    } else {
+      window.location.reload();
+    }
+  });
+}
+
+function getPosts() {
+  return firebase.database().ref('posts').once('value').then(function(snapshot) {
+    const posts = snapshot.val();
+    console.log(posts);
+
+    for (const postKey in posts) {
+      const post = posts[postKey];
+      $('#postsList').append('<div>' + post.postTitle + ' - ' + post.postBody + '</div>');
+    }
+  });
 }

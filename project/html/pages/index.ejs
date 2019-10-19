@@ -12,15 +12,22 @@
     <h1>Hello World</h1>
   </div>
 
-  <!-- <p>Click on the button for a surprise.</p> -->
+  <p>Click to login.</p>
 
-  <!-- <button onClick="showPicture()" class="btn btn-dark">Click me</button> -->
+  <button onClick="handleLogin()" class="btn btn-dark">Login</button>
 
-  <input class='search' type='text' placeholder='Enter City Name'>
-  <button type='button' onClick='searchWeather()'>Search</button>
+  <form onSubmit="handleMessageFormSubmit()" action="#">
+    Title:<br>
+    <input id="post-title">
+    <br>Body:<br>
+    <textarea id="post-body"></textarea>
+    <br>
+    <button>Submit</button>
+  </form>
+
+  <div id="postsList">
     
-  <div class="city"></div>
-  <div class="temp"></div>
+  </div>
 
 </body>
 
